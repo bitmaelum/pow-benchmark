@@ -1,13 +1,15 @@
 package main
 
 import (
-	"crypto/rand"
 	"fmt"
 	"github.com/bitmaelum/bitmaelum-suite/pkg/proofofwork"
 	"github.com/jaypipes/ghw"
-	"io"
 	"runtime"
 	"time"
+)
+
+var (
+	message string = "This is the message we are going to provide proof-of-work on"
 )
 
 func main() {
@@ -50,12 +52,6 @@ func doProofOfWork() {
 	// Start with 10 bits and gradually increase the number (until 64 or users CTRL-C's)
 	bits := 1
 	for {
-		message := make([]byte, 128)
-		_, err := io.ReadFull(rand.Reader, message)
-		if err != nil {
-			panic(err)
-		}
-
 		startRun := time.Now()
 		runUntil := startRun.Add(5 * time.Second)
 
