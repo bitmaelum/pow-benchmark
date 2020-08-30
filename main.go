@@ -34,16 +34,16 @@ Hit CTRL-C to stop. The more data, the better though. Please share the results o
 }
 
 func displayCpuInfo() {
-	info, err := ghw.CPU()
-	if err != nil {
-		panic(err)
-	}
-
 	fmt.Printf("OS     : %s\n", runtime.GOOS)
 	fmt.Printf("Arch   : %s\n", runtime.GOARCH)
-	fmt.Printf("CPUs   : %d (cores: %d)\n", runtime.NumCPU(), info.TotalCores)
-	fmt.Printf("Vendor : %s\n", info.Processors[0].Vendor)
-	fmt.Printf("Model  : %s\n", info.Processors[0].Model)
+
+
+	info, err := ghw.CPU()
+	if err == nil {
+		fmt.Printf("CPUs   : %d (cores: %d)\n", runtime.NumCPU(), info.TotalCores)
+		fmt.Printf("Vendor : %s\n", info.Processors[0].Vendor)
+		fmt.Printf("Model  : %s\n", info.Processors[0].Model)
+	}
 }
 
 func doProofOfWork() {
