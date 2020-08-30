@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/bitmaelum/bitmaelum-suite/pkg/proofofwork"
+	"github.com/bitmaelum/pow-benchmark/work"
 	"github.com/jaypipes/ghw"
 	"runtime"
 	"time"
@@ -29,7 +29,8 @@ Hit CTRL-C to stop. The more data, the better though. Please share the results o
 
 
 	fmt.Println("---------- START WORK INFO -------------")
-	doProofOfWork()
+	cores := MaxCores()
+	doProofOfWork(cores)
 	fmt.Println("---------- END WORK INFO -------------")
 
 	fmt.Println("Thanks for participating. Please share the results on slack (phpnl) in a DM to @jaytaph")
@@ -48,7 +49,16 @@ func displayCpuInfo() {
 	}
 }
 
-func doProofOfWork() {
+func MaxCores() int {
+    maxProcs := runtime.GOMAXPROCS(0)
+    numCPU := runtime.NumCPU()
+    if maxProcs < numCPU {
+        return maxProcs
+    }
+    return numCPU
+}
+
+func doProofOfWork(cores int) {
 	// Start with 10 bits and gradually increase the number (until 64 or users CTRL-C's)
 	bits := 1
 	for {
@@ -61,8 +71,11 @@ func doProofOfWork() {
 			cnt++
 
 			startTime := time.Now().UnixNano()
-			pow := proofofwork.New(bits, string(message), 0)
-			pow.Work()
+			pow := work.New(bits, fmt.Sprintf("%s-%d", string(message), cnt), 0)
+			pow.Work(cores)
+			if !pow.IsValid() {
+				panic("Work done, but could not validate!")
+			}
 			endTime := time.Now().UnixNano()
 
 			totalTime += endTime - startTime
